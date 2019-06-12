@@ -13,7 +13,7 @@ struct AudioInfo
     std::wstring year;		//年份
     std::wstring comment;	//注释
     std::wstring genre;		//流派
-    BYTE genre_idx{ 255 };		//以字节表示的流派号
+    unsigned char genre_idx{ 255 };		//以字节表示的流派号
     int track{};		//音轨序号
     int tag_type{};		//标签的类型（0：其他；1：ID3v1；2：ID3v2）
 
