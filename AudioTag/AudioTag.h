@@ -1,5 +1,9 @@
+/******************************************************
+* AudioTag.h
+* Copyright (C) 2019 By Zhong Yang. All rights reserved.
+*******************************************************/
 #pragma once
-#include "stdafx.h"
+#include <string>
 
 struct AudioInfo
 {
