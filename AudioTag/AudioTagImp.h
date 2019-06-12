@@ -32,7 +32,7 @@ private:
     bool GetID3V2Tag();
     bool GetWmaTag();
     //bool GetMp4Tag();
-    //bool GetOggTag();
+    bool GetOggTag();
     bool GetFlacTag();
 
     //获取音频的标签区域的内容
@@ -40,6 +40,7 @@ private:
     void GetID3V2TagContents(std::string& contents_buff);
     void GetID3V1TagContents(std::string& contents_buff);
     void GetWmaTagContents(std::string& contents_buff);
+    void GetFileFrontContent(size_t size, std::string& contents_buff);      //获取文件前面指定字节的内容
 
     static std::wstring _GetAlbumCover(const std::string& tag_content, size_t cover_index, int& image_type, wchar_t* file_name = nullptr);
 

@@ -4,6 +4,7 @@
 #include "stdafx.h"
 #include "AudioTagImp.h"
 #include "Common.h"
+#include <map>
 
 struct ID3V1
 {
@@ -50,9 +51,9 @@ void CAudioTag::GetAudioTag(bool id3v2_first)
     case AU_WMA:
         GetWmaTag();
         break;
-    //case AU_OGG:
-    //    GetOggTag();
-    //    break;
+    case AU_OGG:
+        GetOggTag();
+        break;
     //case AU_MP4:
     //    GetMp4Tag();
     //    break;
@@ -278,19 +279,90 @@ bool CAudioTag::GetWmaTag()
             m_song_info.artist = tag_list_wcs[1];
         if (tag_list_wcs.size() >= 3)
             m_song_info.comment = tag_list_wcs[2];
+    }
 
-        ////获取扩展帧信息
-        //std::string extended_tag_contents = tag_contents.substr(58, index - 58);
-        //CCommon::StringSplit(extended_tag_contents, std::string(5, '\0'), tag_list);
-        //tag_list_wcs.clear();
-        //for (auto& tag : tag_list)
-        //{
-        //    tag.push_back('\0');
-        //    tag_list_wcs.push_back(CCommon::StrToUnicode(tag, CodeType::UTF16));
-        //}
+    //获取扩展帧信息
+    const std::string extended_frame{ '\x40', '\xA4', '\xD0', '\xD2', '\x07', '\xE3', '\xD2', '\x11', '\x97', '\xF0', '\x00', '\xA0', '\xC9', '\x5E', '\xA8', '\x50', };
+    index = tag_contents.find(extended_frame);
+    if (index != std::wstring::npos)
+    {
+        size_t tag_size = (tag_contents[index + 16] & 0xff)
+                          + (tag_contents[index + 17] & 0xff) * 0x100
+                          + (tag_contents[index + 18] & 0xff) * 0x10000
+                          + (tag_contents[index + 19] & 0xff) * 0x1000000;
 
-        ////std::wstring standered_tag_contents = CCommon::StrToUnicode(tag_contents.substr(index + 34, tag_size), CodeType::UTF16);
-        //int a = 0;
+        std::string extended_tag_contents = tag_contents.substr(index + 28, tag_size);
+        std::vector<std::string> tag_list;
+        CCommon::StringSplit(extended_tag_contents, std::string(3, '\0'), tag_list);
+        std::map<std::wstring, std::wstring> extended_tag_map;
+        int i = 0;
+        std::wstring name, content;
+        for (auto& tag : tag_list)
+        {
+            tag.push_back('\0');
+            if (i % 2 == 0)
+            {
+                if (tag.size() > 2)
+                {
+                    if(i != 0)
+                        tag = tag.substr(2);
+                }
+                else
+                    continue;
+                name = CCommon::StrToUnicode(tag, CodeType::UTF16);
+            }
+            else
+            {
+                if (tag.size() > 4)
+                    tag = tag.substr(4);
+                else
+                    continue;
+                content = CCommon::StrToUnicode(tag, CodeType::UTF16);
+                extended_tag_map[name] = content;
+            }
+            i++;
+        }
+
+        m_song_info.track = _wtoi(extended_tag_map[L"WM/TrackNumber"].c_str());
+        m_song_info.album = extended_tag_map[L"WM/AlbumTitle"];
+        m_song_info.genre = extended_tag_map[L"WM/Genre"];
+        m_song_info.year = extended_tag_map[L"WM/Year"];
+    }
+
+    return true;
+}
+
+bool CAudioTag::GetOggTag()
+{
+    std::string tag_contents;
+    GetFileFrontContent(2048, tag_contents);
+    if (tag_contents.substr(0, 4) == "OggS")
+    {
+        std::map<std::string, std::wstring> tag_map;
+        const std::vector<std::string> tag_ids{ "Title", "Artist", "Album", "Tracknumber" };
+        for (const auto& tag_id : tag_ids)
+        {
+            size_t index = CCommon::StringFindNoCase(tag_contents, tag_id);       //查找标签
+            if (index != std::string::npos && index >= 4)
+            {
+                //标签前面4个字节是标签的大小
+                size_t tag_size = (tag_contents[index - 4] & 0xff)
+                                  + (tag_contents[index - 3] & 0xff) * 0x100
+                                  + (tag_contents[index - 2] & 0xff) * 0x10000
+                                  + (tag_contents[index - 1] & 0xff) * 0x1000000;
+                std::string cur_tag_raw = tag_contents.substr(index, tag_size);
+                index = cur_tag_raw.find('=');
+                if(index == std::string::npos || index >= cur_tag_raw.size() - 1)
+                    continue;
+                tag_map[tag_id] = CCommon::StrToUnicode(cur_tag_raw.substr(index + 1), CodeType::UTF8);
+
+            }
+        }
+
+        m_song_info.title = tag_map[tag_ids[0]];
+        m_song_info.artist = tag_map[tag_ids[1]];
+        m_song_info.album = tag_map[tag_ids[2]];
+        m_song_info.track = _wtoi(tag_map[tag_ids[3]].c_str());
         return true;
     }
 
@@ -470,6 +542,20 @@ void CAudioTag::GetWmaTagContents(std::string & contents_buff)
         }
 
         if (size >= 24 && size >= tag_size)
+            break;
+    }
+}
+
+void CAudioTag::GetFileFrontContent(size_t size, std::string & contents_buff)
+{
+    std::ifstream file{ m_file_path.c_str(), std::ios::binary };
+    if (file.fail())
+        return;
+    contents_buff.clear();
+    while (!file.eof())
+    {
+        contents_buff.push_back(file.get());
+        if (contents_buff.size() > size)
             break;
     }
 }

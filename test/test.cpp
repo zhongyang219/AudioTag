@@ -8,7 +8,7 @@
 int main()
 {
     //测试标签读取
-    auto pAudioTag = ATCreateInstance(L"D:\\Temp\\Ho-Kago Tea Time - Singing!.mp3");
+    auto pAudioTag = ATCreateInstance(L"D:\\Temp\\Six002凤凌长空．演奏曲.ogg");
     pAudioTag->GetAudioTag(true);
     AudioInfo info = pAudioTag->GetAudioInfo();
 
