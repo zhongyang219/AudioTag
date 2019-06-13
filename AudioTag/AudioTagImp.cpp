@@ -24,12 +24,6 @@ CAudioTag::CAudioTag(const std::wstring& file_path)
     : m_file_path{ file_path }
 {
     m_type = CCommon::GetAudioTypeByExtension(m_file_path);
-
-    //
-    //std::string str = "123##223##abcd";
-    //std::vector<std::string> str_list;
-    //CCommon::StringSplit(str, "##", str_list);
-    //int a = 0;
 }
 
 void CAudioTag::GetAudioTag(bool id3v2_first)
@@ -291,7 +285,7 @@ bool CAudioTag::GetWmaTag()
                           + (tag_contents[index + 18] & 0xff) * 0x10000
                           + (tag_contents[index + 19] & 0xff) * 0x1000000;
 
-        std::string extended_tag_contents = tag_contents.substr(index + 28, tag_size);
+        std::string extended_tag_contents = tag_contents.substr(index + 26, tag_size - 26);
         std::vector<std::string> tag_list;
         CCommon::StringSplit(extended_tag_contents, std::string(3, '\0'), tag_list);
         std::map<std::wstring, std::wstring> extended_tag_map;
@@ -303,10 +297,7 @@ bool CAudioTag::GetWmaTag()
             if (i % 2 == 0)
             {
                 if (tag.size() > 2)
-                {
-                    if(i != 0)
-                        tag = tag.substr(2);
-                }
+                    tag = tag.substr(2);
                 else
                     continue;
                 name = CCommon::StrToUnicode(tag, CodeType::UTF16);
