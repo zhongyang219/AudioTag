@@ -1,25 +1,31 @@
-/******************************************************
+ï»¿/******************************************************
 * AudioTag.h
 * Copyright (C) 2019 By Zhong Yang. All rights reserved.
 *******************************************************/
 #pragma once
 #include <string>
 
+#ifdef AUDIOTAG_EXPORTS
+#define AUDIOTAG_EXPORT __declspec(dllexport)
+#else
+#define AUDIOTAG_EXPORT __declspec(dllimport)
+#endif
+
 struct AudioInfo
 {
-    std::wstring title;		//±êÌâ
-    std::wstring artist;		//ÒÕÊõ¼Ò
-    std::wstring album;		//³ªÆ¬¼¯
-    std::wstring year;		//Äê·İ
-    std::wstring comment;	//×¢ÊÍ
-    std::wstring genre;		//Á÷ÅÉ
-    unsigned char genre_idx{ 255 };		//ÒÔ×Ö½Ú±íÊ¾µÄÁ÷ÅÉºÅ
-    int track{};		//Òô¹ìĞòºÅ
-    int tag_type{};		//±êÇ©µÄÀàĞÍ£¨0£ºÆäËû£»1£ºID3v1£»2£ºID3v2£©
+    std::wstring title;		//æ ‡é¢˜
+    std::wstring artist;		//è‰ºæœ¯å®¶
+    std::wstring album;		//å”±ç‰‡é›†
+    std::wstring year;		//å¹´ä»½
+    std::wstring comment;	//æ³¨é‡Š
+    std::wstring genre;		//æµæ´¾
+    unsigned char genre_idx{ 255 };		//ä»¥å­—èŠ‚è¡¨ç¤ºçš„æµæ´¾å·
+    int track{};		//éŸ³è½¨åºå·
+    int tag_type{};		//æ ‡ç­¾çš„ç±»å‹ï¼ˆ0ï¼šå…¶ä»–ï¼›1ï¼šID3v1ï¼›2ï¼šID3v2ï¼‰
 
 };
 
-//ÒôÆµÎÄ¼şÀàĞÍ
+//éŸ³é¢‘æ–‡ä»¶ç±»å‹
 enum AudioType
 {
     AU_MP3,
@@ -34,28 +40,28 @@ enum AudioType
 class __declspec(dllexport) IAudioTag
 {
 public:
-    //»ñÈ¡ÒôÆµÎÄ¼şµÄ±êÇ©ĞÅÏ¢
-    //id3v2_first£ºÊÇ·ñÓÅÏÈ»ñÈ¡ID3V2±êÇ©£¬·ñÔò£¬ÓÅÏÈ»ñÈ¡ID3V1±êÇ©
+    //è·å–éŸ³é¢‘æ–‡ä»¶çš„æ ‡ç­¾ä¿¡æ¯
+    //id3v2_firstï¼šæ˜¯å¦ä¼˜å…ˆè·å–ID3V2æ ‡ç­¾ï¼Œå¦åˆ™ï¼Œä¼˜å…ˆè·å–ID3V1æ ‡ç­¾
     virtual void GetAudioTag(bool id3v2_first) = 0;
 
-    //»ñÈ¡ÒôÆµÎÄ¼şµÄ×¨¼­·âÃæ£¬²¢±£´æµ½ÁÙÊ±Ä¿Â¼
-    //image_type£ºÓÃÀ´½ÓÊÕ·âÃæµÄ¸ñÊ½ 0:jpg, 1:png, 2:gif
-    //file_name: Ö¸¶¨±£´æµÄ×¨¼­·âÃæµÄÎÄ¼şÃû£¬Èç¹ûÎªnullptr£¬ÔòÊ¹ÓÃÄ¬ÈÏµÄÎÄ¼şÃû
-    //·µ»ØÖµ£º×¨¼­·âÃæµÄ±£´æÂ·¾¶
+    //è·å–éŸ³é¢‘æ–‡ä»¶çš„ä¸“è¾‘å°é¢ï¼Œå¹¶ä¿å­˜åˆ°ä¸´æ—¶ç›®å½•
+    //image_typeï¼šç”¨æ¥æ¥æ”¶å°é¢çš„æ ¼å¼ 0:jpg, 1:png, 2:gif
+    //file_name: æŒ‡å®šä¿å­˜çš„ä¸“è¾‘å°é¢çš„æ–‡ä»¶åï¼Œå¦‚æœä¸ºnullptrï¼Œåˆ™ä½¿ç”¨é»˜è®¤çš„æ–‡ä»¶å
+    //è¿”å›å€¼ï¼šä¸“è¾‘å°é¢çš„ä¿å­˜è·¯å¾„
     virtual std::wstring GetAlbumCover(int& image_type, wchar_t* file_name = nullptr) = 0;
 
-    //·µ»Ø»ñÈ¡µ½µÄÒôÆµĞÅÏ¢
+    //è¿”å›è·å–åˆ°çš„éŸ³é¢‘ä¿¡æ¯
     virtual const AudioInfo& GetAudioInfo() const = 0;
 
-    //·µ»ØÒôÆµÎÄ¼şµÄÀàĞÍ
+    //è¿”å›éŸ³é¢‘æ–‡ä»¶çš„ç±»å‹
     virtual AudioType GetAudioType() const = 0;
 
-    //ÏòÒ»¸öMP3ÎÄ¼şĞ´ÈëID3V1±êÇ©
-    //file_path£ºmp3ÎÄ¼şµÄÂ·¾¶
-    //text_cut_off£ºÈç¹ûĞ´ÈëµÄÎÄ±¾³¤¶È³¬¹ıID3V1¿ÉÈİÄÉµÄ³¤¶È£¬Ôò¹ı³¤µÄÎÄ±¾½«»á±»½Ø¶Ï£¬²¢½«text_cut_offÖÃÎªtrue
-    //·µ»ØÖµ£º³É¹¦·µ»Øtrue£¬·ñÔò·µ»Øfalse
+    //å‘ä¸€ä¸ªMP3æ–‡ä»¶å†™å…¥ID3V1æ ‡ç­¾
+    //file_pathï¼šmp3æ–‡ä»¶çš„è·¯å¾„
+    //text_cut_offï¼šå¦‚æœå†™å…¥çš„æ–‡æœ¬é•¿åº¦è¶…è¿‡ID3V1å¯å®¹çº³çš„é•¿åº¦ï¼Œåˆ™è¿‡é•¿çš„æ–‡æœ¬å°†ä¼šè¢«æˆªæ–­ï¼Œå¹¶å°†text_cut_offç½®ä¸ºtrue
+    //è¿”å›å€¼ï¼šæˆåŠŸè¿”å›trueï¼Œå¦åˆ™è¿”å›false
     virtual bool WriteMp3Tag(const AudioInfo & song_info, bool & text_cut_off) = 0;
 
 };
 
-__declspec(dllexport) std::shared_ptr<IAudioTag> ATCreateInstance(const std::wstring& file_path);
+__declspec(dllexport) IAudioTag* ATCreateInstance(const std::wstring& file_path);

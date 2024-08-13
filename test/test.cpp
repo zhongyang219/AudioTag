@@ -5,27 +5,64 @@
 #include <iostream>
 #include "../AudioTag/AudioTag.h"
 
-int main()
+static void PrintAudioInfo(const std::wstring& file_path)
 {
+    std::wcout << L"file path: " << file_path << std::endl;
     //测试标签读取
-    auto pAudioTag = ATCreateInstance(L"D:\\Temp\\Six002凤凌长空．演奏曲.ogg");
+    auto pAudioTag = ATCreateInstance(file_path);
     pAudioTag->GetAudioTag(true);
     AudioInfo info = pAudioTag->GetAudioInfo();
-
-    //测试ID3V1写入
-    AudioInfo testInfo;
-    testInfo.title = L"title!@##$$";
-    testInfo.artist = L"artist#$%^^!@#$";
-    testInfo.year = L"1222";
-    testInfo.comment = L"asdfghjkl;";
-    bool text_cut_off;
-    pAudioTag->WriteMp3Tag(testInfo, text_cut_off);
+    std::wcout << L"title: " << info.title << std::endl;
+    std::wcout << L"artist: " << info.artist << std::endl;
+    std::wcout << L"album: " << info.album << std::endl;
+    std::wcout << L"year: " << info.year << std::endl;
+    std::wcout << L"comment: " << info.comment << std::endl;
+    std::wcout << L"genre: " << info.genre << std::endl;
+    std::cout << "track:" << info.track << std::endl;
+    std::cout << "tag_type:" << info.tag_type << std::endl;
 
     //获取专辑封面
-    int img_type;
+    int img_type{ -1 };
     std::wstring cover_path = pAudioTag->GetAlbumCover(img_type);
+    std::wcout << L"cover path: " << cover_path << std::endl;
+    std::cout << "cover type: ";
+    switch (img_type)
+    {
+    case 0:
+        std::cout << "jpg";
+        break;
+    case 1:
+        std::cout << "png";
+        break;
+    case 2:
+        std::cout << "gif";
+        break;
+    default:
+        break;
+    }
 
-    std::cout << "Hello World!\n";
+    std::cout << std::endl;
+    std::cout << std::endl;
+
+    delete pAudioTag;
+}
+
+int main()
+{
+    std::wcout.imbue(std::locale("chs"));
+    PrintAudioInfo(L"D:\\其他文件\\音频测试\\μ's - 友情ノーチェンジ.mp3");
+    PrintAudioInfo(L"D:\\其他文件\\音频测试\\Amanda.wma");
+
+    ////测试ID3V1写入
+    //AudioInfo testInfo;
+    //testInfo.title = L"title!@##$$";
+    //testInfo.artist = L"artist#$%^^!@#$";
+    //testInfo.year = L"1222";
+    //testInfo.comment = L"asdfghjkl;";
+    //bool text_cut_off;
+    //pAudioTag->WriteMp3Tag(testInfo, text_cut_off);
+
+
 }
 
 // 运行程序: Ctrl + F5 或调试 >“开始执行(不调试)”菜单

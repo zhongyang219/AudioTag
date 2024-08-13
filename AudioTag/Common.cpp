@@ -1,4 +1,4 @@
-#include "stdafx.h"
+ï»¿#include "stdafx.h"
 #include "Common.h"
 
 
@@ -17,14 +17,14 @@ std::wstring CCommon::StrToUnicode(const std::string & str, CodeType code_type)
 
     if (code_type == CodeType::AUTO)
     {
-        //code_typeÎªAUTOÊ±×Ô¶¯ÅĞ¶Ï±àÂëÀàĞÍ
-        //Èç¹ûÇ°ÃæÓĞUTF8µÄBOM£¬Ôò±àÂëÀàĞÍÎªUTF8
+        //code_typeä¸ºAUTOæ—¶è‡ªåŠ¨åˆ¤æ–­ç¼–ç ç±»å‹
+        //å¦‚æœå‰é¢æœ‰UTF8çš„BOMï¼Œåˆ™ç¼–ç ç±»å‹ä¸ºUTF8
         if (str.size() >= 3 && str[0] == -17 && str[1] == -69 && str[2] == -65)
             code_type = CodeType::UTF8;
-        //Èç¹ûÇ°ÃæÓĞUTF16µÄBOM£¬Ôò±àÂëÀàĞÍÎªUTF16
+        //å¦‚æœå‰é¢æœ‰UTF16çš„BOMï¼Œåˆ™ç¼–ç ç±»å‹ä¸ºUTF16
         else if (str.size() >= 2 && str[0] == -1 && str[1] == -2)
             code_type = CodeType::UTF16;
-        //else if (IsUTF8Bytes(str.c_str()))		//Èç¹ûÃ»ÓĞÕÒµ½UTF8ºÍUTF16µÄBOM£¬ÔòÅĞ¶Ï×Ö·û´®ÊÇ·ñÓĞUTF8±àÂëµÄÌØĞÔ
+        //else if (IsUTF8Bytes(str.c_str()))		//å¦‚æœæ²¡æœ‰æ‰¾åˆ°UTF8å’ŒUTF16çš„BOMï¼Œåˆ™åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦æœ‰UTF8ç¼–ç çš„ç‰¹æ€§
         //	code_type = CodeType::UTF8_NO_BOM;
         else
             code_type = CodeType::ANSI;
@@ -44,7 +44,7 @@ std::wstring CCommon::StrToUnicode(const std::string & str, CodeType code_type)
     else if (code_type == CodeType::UTF8 || code_type == CodeType::UTF8_NO_BOM)
     {
         std::string temp;
-        //Èç¹ûÇ°ÃæÓĞBOM£¬ÔòÈ¥µôBOM
+        //å¦‚æœå‰é¢æœ‰BOMï¼Œåˆ™å»æ‰BOM
         if (str.size() >= 3 && str[0] == -17 && str[1] == -69 && str[2] == -65)
             temp = str.substr(3);
         else
@@ -59,7 +59,7 @@ std::wstring CCommon::StrToUnicode(const std::string & str, CodeType code_type)
     else if (code_type == CodeType::UTF16)
     {
         std::string temp;
-        //Èç¹ûÇ°ÃæÓĞBOM£¬ÔòÈ¥µôBOM
+        //å¦‚æœå‰é¢æœ‰BOMï¼Œåˆ™å»æ‰BOM
         if (str.size() >= 2 && str[0] == -1 && str[1] == -2)
             temp = str.substr(2);
         else
@@ -108,7 +108,7 @@ std::string CCommon::UnicodeToStr(const std::wstring & wstr, CodeType code_type,
     else if (code_type == CodeType::UTF16)
     {
         result.clear();
-        result.push_back(-1);	//ÔÚÇ°Ãæ¼ÓÉÏUTF16µÄBOM
+        result.push_back(-1);	//åœ¨å‰é¢åŠ ä¸ŠUTF16çš„BOM
         result.push_back(-2);
         result.append((const char*)wstr.c_str(), (const char*)wstr.c_str() + wstr.size() * 2);
         result.push_back('\0');
@@ -120,13 +120,13 @@ std::string CCommon::UnicodeToStr(const std::wstring & wstr, CodeType code_type,
 
 CodeType CCommon::JudgeCodeType(const std::string & str, CodeType default_code)
 {
-    //Èç¹ûÇ°ÃæÓĞUTF8µÄBOM£¬Ôò±àÂëÀàĞÍÎªUTF8
+    //å¦‚æœå‰é¢æœ‰UTF8çš„BOMï¼Œåˆ™ç¼–ç ç±»å‹ä¸ºUTF8
     if (str.size() >= 3 && str[0] == -17 && str[1] == -69 && str[2] == -65)
         return CodeType::UTF8;
-    //Èç¹ûÇ°ÃæÓĞUTF16µÄBOM£¬Ôò±àÂëÀàĞÍÎªUTF16
+    //å¦‚æœå‰é¢æœ‰UTF16çš„BOMï¼Œåˆ™ç¼–ç ç±»å‹ä¸ºUTF16
     else if (str.size() >= 2 && str[0] == -1 && str[1] == -2)
         return CodeType::UTF16;
-    //else if (IsUTF8Bytes(str.c_str()))		//Èç¹ûÃ»ÓĞÕÒµ½UTF8ºÍUTF16µÄBOM£¬ÔòÅĞ¶Ï×Ö·û´®ÊÇ·ñÓĞUTF8±àÂëµÄÌØĞÔ
+    //else if (IsUTF8Bytes(str.c_str()))		//å¦‚æœæ²¡æœ‰æ‰¾åˆ°UTF8å’ŒUTF16çš„BOMï¼Œåˆ™åˆ¤æ–­å­—ç¬¦ä¸²æ˜¯å¦æœ‰UTF8ç¼–ç çš„ç‰¹æ€§
     //	return CodeType::UTF8_NO_BOM;
     else
         return default_code;
@@ -136,9 +136,9 @@ std::wstring CCommon::GetTemplatePath()
 {
     std::wstring result;
     wchar_t buff[MAX_PATH];
-    GetTempPath(MAX_PATH, buff);		//»ñÈ¡ÁÙÊ±ÎÄ¼ş¼ĞµÄÂ·¾¶
+    GetTempPath(MAX_PATH, buff);		//è·å–ä¸´æ—¶æ–‡ä»¶å¤¹çš„è·¯å¾„
     result = buff;
-    if (result.back() != L'\\' && result.back() != L'/')		//È·±£Â·¾¶ºóÃæÓĞĞ±¸Ü
+    if (result.back() != L'\\' && result.back() != L'/')		//ç¡®ä¿è·¯å¾„åé¢æœ‰æ–œæ 
         result.push_back(L'\\');
     return result;
 }
@@ -153,6 +153,18 @@ void CCommon::TagStrNormalize(std::wstring & str)
             return;
         }
     }
+}
+
+bool CCommon::StrIsNumber(const std::wstring& str)
+{
+    if (str.empty())
+        return false;
+    for (const auto& ch : str)
+    {
+        if (ch < L'0' || ch > L'9')
+            return false;
+    }
+    return true;
 }
 
 AudioType CCommon::GetAudioTypeByExtension(const std::wstring & file_name)
@@ -188,6 +200,23 @@ std::wstring CCommon::GetGenre(BYTE genre)
         return L"Unknown";
 }
 
+std::wstring CCommon::GenreConvert(std::wstring genre)
+{
+    if (genre.empty())
+        return std::wstring();
+    if (genre[0] == L'(')		//å¦‚æœå‰åæœ‰æ‹¬å·ï¼Œåˆ™åˆ é™¤æ‹¬å·
+        genre = genre.substr(1);
+    if (genre.back() == L')')
+        genre.pop_back();
+    if (StrIsNumber(genre))		//å¦‚æœæµæ´¾ä¿¡æ¯æ˜¯æ•°å­—ï¼Œåˆ™è½¬æ¢ä¸ºæ ‡å‡†æµæ´¾ä¿¡æ¯
+    {
+        int n_genre = _wtoi(genre.c_str());
+        if (n_genre < 256)
+            return GetGenre(static_cast<BYTE>(n_genre));
+    }
+    return genre;
+}
+
 void CCommon::StringCopy(char * dest, size_t size, std::string source)
 {
     size_t source_size = source.size();
@@ -198,7 +227,7 @@ void CCommon::StringCopy(char * dest, size_t size, std::string source)
         dest[i] = source[i];
     }
 
-    //È·±£Ä¿±ê×Ö·û´®Ä©Î²ÓĞÒ»¸ö\0
+    //ç¡®ä¿ç›®æ ‡å­—ç¬¦ä¸²æœ«å°¾æœ‰ä¸€ä¸ª\0
     size_t copy_cnt = i;
     if (copy_cnt < max_size)
         dest[copy_cnt] = L'\0';

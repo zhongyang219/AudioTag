@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "AudioTag.h"
 
 class CAudioTag : public IAudioTag
@@ -6,8 +6,8 @@ class CAudioTag : public IAudioTag
 public:
     CAudioTag(const std::wstring& file_path);
 
-    //»ñÈ¡ÒôÆµÎÄ¼şµÄ±êÇ©ĞÅÏ¢£¬½á¹û±£´æÔÚ¹¹Ôìº¯Êı´«µİ½øÀ´µÄAudioInfo½á¹¹Àï£¬
-    //id3v2_first£ºÊÇ·ñÓÅÏÈ»ñÈ¡ID3V2±êÇ©£¬·ñÔò£¬ÓÅÏÈ»ñÈ¡ID3V1±êÇ©
+    //è·å–éŸ³é¢‘æ–‡ä»¶çš„æ ‡ç­¾ä¿¡æ¯ï¼Œç»“æœä¿å­˜åœ¨æ„é€ å‡½æ•°ä¼ é€’è¿›æ¥çš„AudioInfoç»“æ„é‡Œï¼Œ
+    //id3v2_firstï¼šæ˜¯å¦ä¼˜å…ˆè·å–ID3V2æ ‡ç­¾ï¼Œå¦åˆ™ï¼Œä¼˜å…ˆè·å–ID3V1æ ‡ç­¾
     void GetAudioTag(bool id3v2_first) override;
 
     std::wstring GetAlbumCover(int& image_type, wchar_t* file_name = nullptr) override;
@@ -28,6 +28,11 @@ private:
     AudioInfo m_song_info;
     AudioType m_type;
 
+    //ä»ID3V2æ ‡ç­¾åŒºåŸŸçš„å†…å®¹ä¸­æå–å‡ºæŒ‡å®šçš„ID3æ ‡ç­¾
+    //tag_contentsï¼šæ•´ä¸ªæ ‡ç­¾åŒºåŸŸçš„å†…å®¹
+    //tag_identifyï¼šæ ‡ç­¾çš„æ ‡è¯†
+    std::wstring GetSpecifiedId3V2Tag(const std::string& tag_contents, const std::string& tag_identify);
+
     bool GetID3V1Tag();
     bool GetID3V2Tag();
     bool GetWmaTag();
@@ -35,12 +40,12 @@ private:
     bool GetOggTag();
     bool GetFlacTag();
 
-    //»ñÈ¡ÒôÆµµÄ±êÇ©ÇøÓòµÄÄÚÈİ
+    //è·å–éŸ³é¢‘çš„æ ‡ç­¾åŒºåŸŸçš„å†…å®¹
     void GetFlacTagContents(std::string& contents_buff);
     void GetID3V2TagContents(std::string& contents_buff);
     void GetID3V1TagContents(std::string& contents_buff);
     void GetWmaTagContents(std::string& contents_buff);
-    void GetFileFrontContent(size_t size, std::string& contents_buff);      //»ñÈ¡ÎÄ¼şÇ°ÃæÖ¸¶¨×Ö½ÚµÄÄÚÈİ
+    void GetFileFrontContent(size_t size, std::string& contents_buff);      //è·å–æ–‡ä»¶å‰é¢æŒ‡å®šå­—èŠ‚çš„å†…å®¹
 
     static std::wstring _GetAlbumCover(const std::string& tag_content, size_t cover_index, int& image_type, wchar_t* file_name = nullptr);
 

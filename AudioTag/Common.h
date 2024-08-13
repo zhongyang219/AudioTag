@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 #include "AudioTag.h"
 #include <vector>
 
@@ -12,7 +12,7 @@ enum class CodeType
 };
 
 #define GENRE_MAX 148
-//Á÷ÅÉÁĞ±í
+//æµæ´¾åˆ—è¡¨
 const wchar_t GENRE_TABLE[GENRE_MAX][24]
 {
     L"Blues",
@@ -171,34 +171,40 @@ public:
     CCommon();
     ~CCommon();
 
-    //½«stringÀàĞÍµÄ×Ö·û´®×ª»»³ÉUnicode±àÂëµÄwstring×Ö·û´®
+    //å°†stringç±»å‹çš„å­—ç¬¦ä¸²è½¬æ¢æˆUnicodeç¼–ç çš„wstringå­—ç¬¦ä¸²
     static std::wstring StrToUnicode(const std::string& str, CodeType code_type = CodeType::AUTO);
 
-    //½«Unicode±àÂëµÄwstring×Ö·û´®×ª»»³ÉstringÀàĞÍµÄ×Ö·û´®£¬Èç¹ûÓĞ×Ö·ûÎŞ·¨×ª»»£¬½«²ÎÊıchar_cannot_convertÖ¸ÏòµÄbool±äÁ¿ÖÃÎªtrue
+    //å°†Unicodeç¼–ç çš„wstringå­—ç¬¦ä¸²è½¬æ¢æˆstringç±»å‹çš„å­—ç¬¦ä¸²ï¼Œå¦‚æœæœ‰å­—ç¬¦æ— æ³•è½¬æ¢ï¼Œå°†å‚æ•°char_cannot_convertæŒ‡å‘çš„boolå˜é‡ç½®ä¸ºtrue
     static std::string UnicodeToStr(const std::wstring & wstr, CodeType code_type, bool* char_cannot_convert = nullptr);
 
-    //ÅĞ¶ÏÒ»¸ö×Ö·û´®µÄ±àÂë¸ñÊ½
+    //åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦ä¸²çš„ç¼–ç æ ¼å¼
     static CodeType JudgeCodeType(const std::string& str, CodeType default_code = CodeType::ANSI);
 
-    //»ñÈ¡ÁÙÊ±ÎÄ¼ş¼ĞÂ·¾¶
+    //è·å–ä¸´æ—¶æ–‡ä»¶å¤¹è·¯å¾„
     static std::wstring GetTemplatePath();
 
-    //É¾³ıÒ»¸ö×Ö·û´®ÖĞ·Ç´òÓ¡×Ö·û¿ªÊ¼µÄºóÃæÈ«²¿×Ö·û
+    //åˆ é™¤ä¸€ä¸ªå­—ç¬¦ä¸²ä¸­éæ‰“å°å­—ç¬¦å¼€å§‹çš„åé¢å…¨éƒ¨å­—ç¬¦
     static void TagStrNormalize(std::wstring& str);
 
-    //¸ù¾İÎÄ¼şÃûÅĞ¶ÏÎÄ¼şµÄÀàĞÍ
+    //åˆ¤æ–­ä¸€ä¸ªå­—ç¬¦ä¸²æ˜¯å¦æ˜¯æ•°å­—
+    static bool StrIsNumber(const std::wstring& str);
+
+    //æ ¹æ®æ–‡ä»¶ååˆ¤æ–­æ–‡ä»¶çš„ç±»å‹
     static AudioType GetAudioTypeByExtension(const std::wstring& file_name);
 
-    //»ñµÃ±ê×¼Á÷ÅÉĞÅÏ¢
+    //è·å¾—æ ‡å‡†æµæ´¾ä¿¡æ¯
     static std::wstring GetGenre(BYTE genre);
 
-    //×Ô¶¨ÒåµÄ×Ö·û´®¿½±´º¯Êı
+    //å°†æ ‡ç­¾ä¸­æ•°å­—è¡¨ç¤ºçš„æµæ´¾ä¿¡æ¯è½¬æ¢æˆæ ‡å‡†æµæ´¾ä¿¡æ¯
+    static std::wstring GenreConvert(std::wstring genre);
+
+    //è‡ªå®šä¹‰çš„å­—ç¬¦ä¸²æ‹·è´å‡½æ•°
     static void StringCopy(char* dest, size_t size, std::string source);
 
-    //½«Ò»¸ö×Ö·û´®·Ö¸î³ÉÈô¸É¸ö×Ö·û´®
-    //str: Ô­Ê¼×Ö·û´®
-    //div: ÓÃÓÚ·Ö¸îµÄ×Ö·û´®
-    //result: ½ÓÊÕ·Ö¸îºóµÄ½á¹û
+    //å°†ä¸€ä¸ªå­—ç¬¦ä¸²åˆ†å‰²æˆè‹¥å¹²ä¸ªå­—ç¬¦ä¸²
+    //str: åŸå§‹å­—ç¬¦ä¸²
+    //div: ç”¨äºåˆ†å‰²çš„å­—ç¬¦ä¸²
+    //result: æ¥æ”¶åˆ†å‰²åçš„ç»“æœ
     static void StringSplit(const std::string& str, const std::string& div, std::vector<std::string>& results);
 
     template<class T>
