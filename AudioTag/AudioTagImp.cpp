@@ -466,25 +466,30 @@ void CAudioTag::GetFlacTagContents(std::string & contents_buff)
 void CAudioTag::GetID3V2TagContents(std::string & contents_buff)
 {
     std::ifstream file{ m_file_path.c_str(), std::ios::binary };
-    size_t size;
-    if (file.fail())
-        return;
-    contents_buff.clear();
-    int tag_size{};
-    while (!file.eof())
+    if (!file.fail())
     {
-        size = contents_buff.size();
-        contents_buff.push_back(file.get());
-        if (size > 1024 * 1024)
-            break;
+        //从文件前10个字节获取标签大小
+        char tag_head[10];
+        file.read(tag_head, 10);
 
-        if (size == 10)
+        int tag_size{};
+
+        //id3v2标签位于文件头部，且前3个字节必须是"ID3"，否则认为标签不存在
+        if (std::string(tag_head, 3) == "ID3")
         {
-            tag_size = (contents_buff[6] & 0x7F) * 0x200000 + (contents_buff[7] & 0x7F) * 0x4000 + (contents_buff[8] & 0x7F) * 0x80 + (contents_buff[9] & 0x7F);	//获取标签区域的总大小
+            //读取大小
+            tag_size = (tag_head[6] & 0x7F) * 0x200000 + (tag_head[7] & 0x7F) * 0x4000 + (tag_head[8] & 0x7F) * 0x80 + (tag_head[9] & 0x7F);	//获取标签区域的总大小
         }
 
-        if(size >= 10 && size >= tag_size)
-            break;
+        //读取到了标签大小，开始获取标签内容
+        if (tag_size > 0)
+        {
+            file.seekg(std::ios::beg);  //移动到文件最前面
+            char* buff = new char[tag_size];
+            file.read(buff, tag_size);
+            contents_buff.assign(buff, tag_size);
+            delete[] buff;
+        }
     }
 }
 
